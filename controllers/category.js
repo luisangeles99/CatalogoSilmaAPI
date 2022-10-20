@@ -5,12 +5,12 @@ const getCategories = async(req, res) => {
     let categories;
 
     try {
-        categories = await Category.find({});
+        categories = await Category.find({isActive: true});
     } catch (err) {
         return res.status(505).send({error: 'Internal server error'});
     }
     if(categories.length == 0) {
-        return res.status(404).send({error: 'No books found!'});
+        return res.status(404).send({error: 'No categories found!'});
     }
 
     return res.json({data: categories});
