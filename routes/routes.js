@@ -6,6 +6,7 @@ const categories = require('../controllers/category.js');
 
 //book routes
 router.get('/getBooks', books.getBooks);
+router.get('/getBook/:id', books.getBookById);
 router.post('/createBook', books.createBook);
 router.put('/updateBook/:id', books.updateBook);
 router.delete('/deleteBook/:id', books.deleteBook);

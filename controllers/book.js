@@ -16,9 +16,32 @@ const getBooks = async(req, res) => {
     return res.json({data: books});
 }
 
+//get book with id
+const getBookById = async(req, res) => {
+    let book;
+    //sanitize id
+    const bookId = req.params.id;
+    try {
+        book = await Book.findById(bookId)
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
+
+    if(!book){
+        return res.status(400).send({
+            error: 'Book not found!'
+        });
+    }
+
+    return res.json({
+        data: book
+    });
+}
+
 //create book
 const createBook = async(req, res) => {
-    
+    console.log(req.body);
     let book = new Book(req.body);
 
     let bookExists;
@@ -34,7 +57,7 @@ const createBook = async(req, res) => {
         await book.save();
     } catch (err) {
         console.log('Error saving book ' + err);
-        return res.sendStatus(505);
+        return res.sendStatus(400);
     }
     return res.json({success: 'Book created', book});
 }
@@ -49,7 +72,7 @@ const updateBook = async(req, res) => {
     //TODO: validUpdates
     const allowedUpdates = ['name', 'author'];
 
-    const isValidUpdate = true;
+    const isValidUpdate = updates.every((update) => allowedUpdates.includes(update));
     if(!isValidUpdate) {
         return res.status(400).send({error: 'Invalid update check avaliable update keys ' + allowedUpdates});
     }
@@ -60,8 +83,7 @@ const updateBook = async(req, res) => {
         };
         
         return res.status(200).send(
-            {succes: 'Updated book.',
-            book}
+            {success: 'Updated book.'}
             );
     }).catch(function(err){
         return res.sendStatus(500);
@@ -90,6 +112,7 @@ const deleteBook = async(req, res) => {
 
 module.exports = {
     getBooks: getBooks,
+    getBookById: getBookById,
     createBook: createBook,
     updateBook: updateBook,
     deleteBook: deleteBook
