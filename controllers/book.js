@@ -1,4 +1,5 @@
 const Book = require('../models/book');
+const { upload } = require('../services/cloudinary'); 
 
 //get all available books
 const getBooks = async(req, res) => {
@@ -41,8 +42,10 @@ const getBookById = async(req, res) => {
 
 //create book
 const createBook = async(req, res) => {
-    console.log(req.body);
+    
     let book = new Book(req.body);
+
+    
 
     let bookExists;
 
@@ -54,7 +57,12 @@ const createBook = async(req, res) => {
     }*/
     
     try {
+        imgPath = req.file.path;
+        //save img
+        const res = await upload(imgPath, 'book-cover-imgs');
+        book.coverImg = res.url;
         await book.save();
+
     } catch (err) {
         console.log('Error saving book ' + err);
         return res.sendStatus(400);
@@ -86,6 +94,7 @@ const updateBook = async(req, res) => {
             {success: 'Updated book.'}
             );
     }).catch(function(err){
+        console.log(err);
         return res.sendStatus(500);
     });
 }

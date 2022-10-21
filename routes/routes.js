@@ -1,13 +1,16 @@
 const express = require('express');
 const router = express.Router();
 
+const fileUpload = require('../middleware/fileUpload');
 const books = require('../controllers/book');
 const categories = require('../controllers/category.js');
 
 //book routes
 router.get('/getBooks', books.getBooks);
 router.get('/getBook/:id', books.getBookById);
-router.post('/createBook', books.createBook);
+router.post('/createBook', 
+            fileUpload.single('image'),
+            books.createBook);
 router.put('/updateBook/:id', books.updateBook);
 router.delete('/deleteBook/:id', books.deleteBook);
 
