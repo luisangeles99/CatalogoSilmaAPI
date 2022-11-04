@@ -78,7 +78,7 @@ const updateBook = async(req, res) => {
     const updates = Object.keys(req.body);
 
     //TODO: validUpdates
-    const allowedUpdates = ['name', 'author'];
+    const allowedUpdates = ['name', 'author', 'coverImg'];
 
     const isValidUpdate = updates.every((update) => allowedUpdates.includes(update));
     if(!isValidUpdate) {
