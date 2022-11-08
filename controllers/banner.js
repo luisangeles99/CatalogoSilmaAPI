@@ -37,14 +37,18 @@ const createBanner = async(req, res) => {
     return res.json({success: 'Banner created', banner});
 }
 
-//update active banner
+// update active banner
+// isActive is not allowed to be changed from api
 const updateBanner = async(req, res) => {
     
     const bannerId = req.body.id;
     const updates = Object.keys(req.body);
-    
+
     //remove id from obj
-    delete updates.id;
+    const i = updates.indexOf('id');
+    if( i != -1){
+        updates.splice(i, 1);
+    }
 
     const allowedUpdates = ['name'];
 
@@ -78,8 +82,9 @@ const updateBanner = async(req, res) => {
         banner = await Banner.findByIdAndUpdate(bannerId, 
           {
             $set: {
+                name: req.body.name,
                 imgUrl: res.url,
-                publicId: res.public_id
+                publicImgId: res.public_id
             }
           }  
         );
