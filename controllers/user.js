@@ -80,11 +80,12 @@ const loginUser = async(req, res) => {
     let secret = process.env.BCRYPT_SECRET || require('../config').BCRYPT_SECRET;
     try {
         token = jwt.sign(
-           {userId: userExists.id, email: userExists.email},
-           secret,
+           {userId: userExists._id, email: userExists.email},
+           'SILMAprojectAPIcAtInt20',
             {expiresIn: '2h'}
         );
     } catch (err) {
+        console.log(err);
         return res.status(505).send({error: 'Internal server error, login failed'});
     }
 
