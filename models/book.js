@@ -23,6 +23,9 @@ const bookSchema = new mongoose.Schema({
         type: mongoose.Types.ObjectId, 
         //required: true,
         ref: 'Category'
+    },
+    coverImg: {
+        type: String
     }
     //TODO: Include the book cover img and book preview
 });
