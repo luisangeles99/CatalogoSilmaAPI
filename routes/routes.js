@@ -15,6 +15,7 @@ router.get('/getBook/:id', books.getBookById);
 
 //Category routes
 router.get('/getCategories', categories.getCategories);
+router.get('/getCategory/:id', categories.getCategoryById);
 router.put('/updateCategory/:id', categories.updateCategory);
 router.delete('/deleteCategory/:id', categories.deleteCategory);
 
