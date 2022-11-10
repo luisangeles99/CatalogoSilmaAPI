@@ -45,8 +45,6 @@ const createBook = async(req, res) => {
     
     let book = new Book(req.body);
 
-    
-
     let bookExists;
 
     /** IF WE WANT TO AVOID DUPLICATES
@@ -57,10 +55,22 @@ const createBook = async(req, res) => {
     }*/
     
     try {
-        imgPath = req.file.path;
         //save img
-        const res = await upload(imgPath, 'book-cover-imgs');
-        book.coverImg = res.url;
+        if(req.files.image){
+            imgPath = req.files.image[0].path;
+            
+            const res = await upload(imgPath, 'book-cover-imgs');
+            book.coverImg = res.url;
+        }
+        
+        //save pdf
+        if(req.files.pdf){
+            pdfPath = req.files.pdf[0].path;
+            const resPdf = await upload(pdfPath, 'book-pdf-preview');
+            book.bookPreview = resPdf.url;
+        }
+
+
         await book.save();
 
     } catch (err) {

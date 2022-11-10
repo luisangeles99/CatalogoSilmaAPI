@@ -25,8 +25,11 @@ router.get('/getBanner', banner.getBanner);
 /******************************* AUTHORIZATION REQUIRED   ********************************/
 router.use(checkAuth); //MIDDLEWARE FOR VALIDATION
 //book routes
-router.post('/createBook', 
-            fileUpload.single('image'),
+router.post('/createBook',
+            fileUpload.fields([
+                {name: 'image'},
+                {name: 'pdf'}
+            ]),
             books.createBook);
 router.put('/updateBook/:id', books.updateBook);
 router.delete('/deleteBook/:id', books.deleteBook);

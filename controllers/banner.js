@@ -71,7 +71,7 @@ const updateBanner = async(req, res) => {
     }
 
     try {
-        //remove previous banner
+        //remove previous banner img
         const publicId = banner.publicImgId;
         await remove(publicId);
 
