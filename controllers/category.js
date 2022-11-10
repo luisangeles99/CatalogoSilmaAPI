@@ -41,8 +41,57 @@ const createCategory = async(req, res) => {
     return res.json({success: 'Category created', category});
 }
 
+const updateCategory = async(req, res) => {
+    
+    const categoryId = req.params.id;
+    const updates = Object.keys(req.body);
+
+    const editableFields = ['name', 'isActive'];
+
+    const isValidUpdate = updates.every((update) => editableFields.includes(update));
+
+    if(!isValidUpdate) {
+        return res.status(400).send({error: 'Invalid update check avaliable update keys ' + editableFields});
+    }
+
+    Category.findByIdAndUpdate(categoryId, req.body).then((category) => {
+        if(!category){
+            return res.status(404).send({ error: `Invalid id. ${categoryId} not found.`});
+        };
+
+        return res.status(200).send(
+            {success: 'Updated category.'}
+        );
+
+    }).catch(function(err){
+        console.log(err);
+        return res.sendStatus(500);
+    });
+
+}
+
+const deleteCategory = async(req, res) => {
+    const categoryId = req.params.id;
+    let category;
+
+    try{
+        category = await Category.findOneAndDelete({_id: categoryId});
+    } catch(err){
+        return res.sendStatus(505);
+    }
+
+    if(!category){
+        return res.status(404).send({ error: `Invalid id. ${categoryId} not found.`});
+    }
+
+    return res.status(200).send({
+        success: 'Category deleted'
+    });
+}
 
 module.exports = {
     getCategories: getCategories,
-    createCategory: createCategory
+    createCategory: createCategory,
+    updateCategory: updateCategory,
+    deleteCategory: deleteCategory
 }
