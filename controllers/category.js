@@ -3,6 +3,24 @@ const Category = require('../models/category.js');
 //get all categories
 const getCategories = async(req, res) => {
     let categories;
+    try {
+        categories = await Category.find();
+    } catch (err) {
+        return res.status(500).json({message: 'Error al obtener categorías'});
+    }
+
+    if(categories.length === 0) {
+        return res.status(404).json({message: 'No se encontraron categorías'});
+    }
+
+    res.status(200).json({data: categories});
+};
+
+
+
+
+const getActiveCategories = async(req, res) => {
+    let categories;
 
     try {
         categories = await Category.find({isActive: true});
@@ -110,6 +128,7 @@ const getCategoryById = async(req, res) => {
 }
 
 module.exports = {
+    getActiveCategories: getActiveCategories,
     getCategories: getCategories,
     createCategory: createCategory,
     updateCategory: updateCategory,
