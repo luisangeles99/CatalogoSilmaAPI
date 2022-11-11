@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const secret = process.env.BCRYPT_SECRET || require('../config').BCRYPT_SECRET;
 
 module.exports = (req, res, next) => {
     try {
