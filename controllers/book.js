@@ -42,17 +42,9 @@ const getBookById = async(req, res) => {
 
 //create book
 const createBook = async(req, res) => {
-    
     let book = new Book(req.body);
 
     let bookExists;
-
-    /** IF WE WANT TO AVOID DUPLICATES
-    try {
-        bookExists = await Book.f
-    } catch (err) {
-        
-    }*/
     
     try {
         //save img
@@ -88,7 +80,7 @@ const updateBook = async(req, res) => {
     const updates = Object.keys(req.body);
 
     //TODO: validUpdates
-    const allowedUpdates = ['name', 'author', 'coverImg'];
+    const allowedUpdates = ['name', 'author', 'coverImg', 'synopsis', 'purchaseURL', 'publishDate'];
 
     const isValidUpdate = updates.every((update) => allowedUpdates.includes(update));
     if(!isValidUpdate) {
