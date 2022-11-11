@@ -26,8 +26,11 @@ const bookSchema = new mongoose.Schema({
     },
     coverImg: {
         type: String
+    },
+    bookPreview: {
+        type: String
     }
-    //TODO: Include the book cover img and book preview
+    
 });
 
 const Book = mongoose.model('Book', bookSchema);

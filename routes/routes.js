@@ -15,6 +15,9 @@ router.get('/getBook/:id', books.getBookById);
 
 //Category routes
 router.get('/getCategories', categories.getCategories);
+router.get('/getCategory/:id', categories.getCategoryById);
+router.put('/updateCategory/:id', categories.updateCategory);
+router.delete('/deleteCategory/:id', categories.deleteCategory);
 
 //User routes
 router.post('/userLogin', user.loginUser);
@@ -25,8 +28,11 @@ router.get('/getBanner', banner.getBanner);
 /******************************* AUTHORIZATION REQUIRED   ********************************/
 router.use(checkAuth); //MIDDLEWARE FOR VALIDATION
 //book routes
-router.post('/createBook', 
-            fileUpload.single('image'),
+router.post('/createBook',
+            fileUpload.fields([
+                {name: 'image'},
+                {name: 'pdf'}
+            ]),
             books.createBook);
 router.put('/updateBook/:id', books.updateBook);
 router.delete('/deleteBook/:id', books.deleteBook);

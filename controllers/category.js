@@ -3,6 +3,24 @@ const Category = require('../models/category.js');
 //get all categories
 const getCategories = async(req, res) => {
     let categories;
+    try {
+        categories = await Category.find();
+    } catch (err) {
+        return res.status(500).json({message: 'Error al obtener categorías'});
+    }
+
+    if(categories.length === 0) {
+        return res.status(404).json({message: 'No se encontraron categorías'});
+    }
+
+    res.status(200).json({data: categories});
+};
+
+
+
+
+const getActiveCategories = async(req, res) => {
+    let categories;
 
     try {
         categories = await Category.find({isActive: true});
@@ -41,8 +59,79 @@ const createCategory = async(req, res) => {
     return res.json({success: 'Category created', category});
 }
 
+const updateCategory = async(req, res) => {
+    
+    const categoryId = req.params.id;
+    const updates = Object.keys(req.body);
+
+    const editableFields = ['name', 'isActive'];
+
+    const isValidUpdate = updates.every((update) => editableFields.includes(update));
+
+    if(!isValidUpdate) {
+        return res.status(400).send({error: 'Invalid update check avaliable update keys ' + editableFields});
+    }
+
+    Category.findByIdAndUpdate(categoryId, req.body).then((category) => {
+        if(!category){
+            return res.status(404).send({ error: `Invalid id. ${categoryId} not found.`});
+        };
+
+        return res.status(200).send(
+            {success: 'Updated category.'}
+        );
+
+    }).catch(function(err){
+        console.log(err);
+        return res.sendStatus(500);
+    });
+
+}
+
+const deleteCategory = async(req, res) => {
+    const categoryId = req.params.id;
+    let category;
+
+    try{
+        category = await Category.findOneAndDelete({_id: categoryId});
+    } catch(err){
+        return res.sendStatus(505);
+    }
+
+    if(!category){
+        return res.status(404).send({ error: `Invalid id. ${categoryId} not found.`});
+    }
+
+    return res.status(200).send({
+        success: 'Category deleted'
+    });
+}
+
+const getCategoryById = async(req, res) => {
+    const categoryId = req.params.id;
+    let category;
+
+    try{
+        category = await Category.findById(categoryId)
+    } catch(err){
+        return res.sendStatus(500);
+    }
+
+    if(!category){
+        return res.status(400).send({
+            error: 'Category not found!'
+        });
+    }
+
+    return res.json({data: category});
+
+}
 
 module.exports = {
+    getActiveCategories: getActiveCategories,
     getCategories: getCategories,
-    createCategory: createCategory
+    createCategory: createCategory,
+    updateCategory: updateCategory,
+    deleteCategory: deleteCategory,
+    getCategoryById: getCategoryById
 }
