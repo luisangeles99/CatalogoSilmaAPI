@@ -1,5 +1,5 @@
 const Book = require('../models/book');
-const { upload } = require('../services/cloudinary'); 
+const { upload, uploadPDF } = require('../services/cloudinary'); 
 
 //get all available books
 const getBooks = async(req, res) => {
@@ -58,7 +58,7 @@ const createBook = async(req, res) => {
         //save pdf
         if(req.files.pdf){
             pdfPath = req.files.pdf[0].path;
-            const resPdf = await upload(pdfPath, 'book-pdf-preview');
+            const resPdf = await uploadPDF(pdfPath, 'book-pdf-preview');
             book.bookPreview = resPdf.url;
         }
 
@@ -78,13 +78,37 @@ const updateBook = async(req, res) => {
     //TODO: Sanitize id
     const bookId = req.params.id;
     const updates = Object.keys(req.body);
+    console.log(updates);
 
     //TODO: validUpdates
-    const allowedUpdates = ['name', 'author', 'coverImg', 'synopsis', 'purchaseURL', 'publishDate'];
+    const allowedUpdates = ['name', 'author', 'coverImg', 'synopsis', 'purchaseURL', 'publishDate', 'image', 'pdf'];
 
     const isValidUpdate = updates.every((update) => allowedUpdates.includes(update));
     if(!isValidUpdate) {
         return res.status(400).send({error: 'Invalid update check avaliable update keys ' + allowedUpdates});
+    }
+
+    try {
+        if(req.files){
+            //save image
+            if(req.files.image){
+                imgPath = req.files.image[0].path;
+                
+                const res = await upload(imgPath, 'book-cover-imgs');
+                req.body.coverImg = res.url;
+            }
+             
+            //save pdf
+            if(req.files.pdf){
+                pdfPath = req.files.pdf[0].path;
+                const resPdf = await uploadPDF(pdfPath, 'book-pdf-preview');
+                req.body.bookPreview = resPdf.url;
+            }
+        }
+        
+    } catch (err) {
+        console.log('Error saving book ' + err);
+        return res.sendStatus(400);
     }
 
     Book.findOneAndUpdate({_id: bookId}, req.body).then((book) => {

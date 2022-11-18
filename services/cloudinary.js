@@ -8,6 +8,17 @@ cloudinary.config({
 
 upload = (path, folder) => {
     return cloudinary.v2.uploader.upload(path, {
+        folder,
+        format: 'png'
+    }).then((data) => {
+        return { url: data.secure_url, public_id: data.public_id };
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
+uploadPDF = (path, folder) => {
+    return cloudinary.v2.uploader.upload(path, {
         folder
     }).then((data) => {
         return { url: data.secure_url, public_id: data.public_id };
@@ -23,5 +34,5 @@ remove = async (public_id) => {
 }
 
 module.exports = {
-    upload, remove
+    upload, remove, uploadPDF
 }
