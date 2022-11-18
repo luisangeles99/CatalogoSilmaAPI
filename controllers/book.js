@@ -5,7 +5,40 @@ const { upload, uploadPDF } = require('../services/cloudinary');
 const getBooks = async(req, res) => {
     let books;
     try{
-        books = await Book.find({});
+        const pipeline = [
+            {
+              '$match': {}
+            }, {
+              '$lookup': {
+                'let': {
+                  'catId': '$categoryId'
+                }, 
+                'from': 'categories', 
+                'pipeline': [
+                  {
+                    '$match': {
+                      '$expr': {
+                        '$eq': [
+                          '$_id', '$$catId'
+                        ]
+                      }
+                    }
+                  }
+                ], 
+                'as': 'catName'
+              }
+            }, {
+              '$set': {
+                'catName': {
+                  '$arrayElemAt': [
+                    '$catName.name', 0
+                  ]
+                }
+              }
+            }
+          ]
+
+        books = await Book.aggregate(pipeline);
     } catch (err) {
         console.log('DB error' + err);
         return res.status(505).send({error: 'Internal server error'});
@@ -78,10 +111,9 @@ const updateBook = async(req, res) => {
     //TODO: Sanitize id
     const bookId = req.params.id;
     const updates = Object.keys(req.body);
-    console.log(updates);
 
     //TODO: validUpdates
-    const allowedUpdates = ['name', 'author', 'coverImg', 'synopsis', 'purchaseURL', 'publishDate', 'image', 'pdf'];
+    const allowedUpdates = ['name', 'author', 'coverImg', 'synopsis', 'purchaseURL', 'publishDate', 'image', 'pdf', 'categoryId'];
 
     const isValidUpdate = updates.every((update) => allowedUpdates.includes(update));
     if(!isValidUpdate) {
