@@ -34,7 +34,12 @@ router.post('/createBook',
                 {name: 'pdf'}
             ]),
             books.createBook);
-router.put('/updateBook/:id', books.updateBook);
+router.put('/updateBook/:id', 
+            fileUpload.fields([
+                {name: 'image'},
+                {name: 'pdf'}
+            ]),
+            books.updateBook);
 router.delete('/deleteBook/:id', books.deleteBook);
 
 //Category routes
